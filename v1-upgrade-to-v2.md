@@ -70,7 +70,7 @@ go get github.com/micro/protoc-gen-micro/v2
 ## 普通rpc.proto
 $ protoc --proto_path=$GOPATH/src:. --micro_out=. --go_out=. 接口文件.proto
 ## 引用了go-micro/api的proto
-protoc --proto_path=${GOPATH}/src:. --go_out=. --micro_out=Mgithub.com/micro/go-micro/api/proto/api.proto=${GOPATH}/src/github.com/micro/go-micro/v2/api/proto:. 接口文件/api.proto
+protoc --proto_path=${GOPATH}/src:. --go_out=. --micro_out=Mgithub.com/micro/go-micro/api/proto/api.proto=github.com/micro/go-micro/v2/api/proto:. 接口文件/api.proto
 ```
 
 对于api类型的proto，也就是包含`import "github.com/micro/go-micro/api/proto/api.proto";`的接口文件需要使用**M**选项来修改api.proto的位置，因为protoc目前对于go mod没有支持。
@@ -144,6 +144,36 @@ V2中GRPC的TLS配置使用不再使用框架提供的Secure函数，使用通�
 	client.DefaultClient.Init(
 		grpcc.AuthTLS(tlsCfg),
 	)
+```
+
+**CLI**
+
+CLI V2接口改为使用指针传参，且EnvVar改为数组
+
+~~"github.com/micro/cli"~~ -> "github.com/micro/cli/v2"
+
+v1:
+```go
+    command := cli.Command{
+		// ...
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "address",
+				Usage:   "Set the web UI address e.g 0.0.0.0:8082",
+				EnvVar: "MICRO_WEB_ADDRESS",
+			},
+```
+
+v2:
+```
+	command := cli.Command{
+		// ...
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "address",
+				Usage:   "Set the web UI address e.g 0.0.0.0:8082",
+				EnvVars: []string{"MICRO_WEB_ADDRESS"},
+			},
 ```
 
 ## Consul方案
